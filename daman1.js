@@ -1,7 +1,7 @@
-const {PULSE_URL, PULSE_ELIGIBILITY_URL, WAIT_TIME, LOGIN_DOM_CHANGED, ELIGIBILITY_PAGE_DOM_CHANGED, ELIGIBILITY_TAB_DOM_CHANGED, EMIRATES_ID_SECTION_ERROR, EXTRACTING_ELIGIBILITY_ERROR, EXECUTION_ERROR, LOGIN_UNKNOWN_ERR, LOG_OUT_ERROR} = require('./constants.js');
+const { DAMAN_URL, WAIT_TIME, LOGIN_DOM_CHANGED, ELIGIBILITY_PAGE_DOM_CHANGED, EMIRATES_ID_SECTION_ERROR, EXTRACTING_ELIGIBILITY_ERROR, EXECUTION_ERROR, LOGIN_UNKNOWN_ERR, LOG_OUT_ERROR} = require('./constants.js');
 const winston = require('winston');
 const { format } = require('logform');
-
+    
 const webdriver = require('selenium-webdriver');
 const chrome = require('selenium-webdriver/chrome');
 const options = new chrome.Options().addArguments("--headless");
@@ -9,8 +9,7 @@ const chromedriver = require('chromedriver');
 var fs = require('fs');
 const { NoSuchElementError } = require('selenium-webdriver').error;
 //chrome.setDefaultService(new chrome.ServiceBuilder(chromedriver.path).build());
-
-
+    
 /*
 const logger = winston.createLogger({
     level: 'info',
@@ -26,6 +25,7 @@ const logger = winston.createLogger({
 });
 */   
 
+
 const logger = winston.createLogger({
     format: format.combine(
       format.timestamp(),
@@ -37,35 +37,37 @@ const logger = winston.createLogger({
 });
 
 
-async function login(webdriver, driver, username, password){
+async function login(webdriver, driver, username, password) {
     
     let loginStatus = false;
-
-    try{
+    
+    try {
         // go to webpage
-        await driver.get(PULSE_URL);
+        await driver.get(DAMAN_URL);
 
+        //click on the sign-in button
+        const signInButton = await driver.findElement(webdriver.By.xpath('//*[@id="navbar"]/div/div/div/ul[2]/li[1]/a'));
+        await signInButton.click();
+    
         // find username and password elements
         const usernameField = await driver.findElement(
-            webdriver.By.id("txtUserName")
+            webdriver.By.id("j_username")
         );
         const passwordField = await driver.findElement(
-            webdriver.By.id("txtPassword")
+            webdriver.By.id("j_password")
         );
-        
+
         // set the password and username
         await usernameField.sendKeys(username);
         await passwordField.sendKeys(password);
-        
-        // find the login button and click it, wait for 10 seconds.
-        await driver.executeScript("document.getElementById('btnLogin').scrollIntoView();");
-        /*await driver.sleep(1 * 10000);*/
-        const login_button = await driver.findElement(webdriver.By.id("btnLogin"));
-        await driver.wait(login_button.click(), WAIT_TIME);
 
+        // find the login button and click it.
+        const loginButton = await driver.findElement(webdriver.By.xpath('//*[@id="form-sign-in"]/div/div/div[5]/div/button'));
+        await loginButton.click();
+        
         loginStatus = true;
 
-    }catch (e) {
+    } catch (e) {
         if(e instanceof NoSuchElementError){
             logger.error(LOGIN_DOM_CHANGED);
         
@@ -76,21 +78,21 @@ async function login(webdriver, driver, username, password){
     return loginStatus; 
 }
 
-
-async function navigate_to_eligibility_page(webdriver, driver){
+async function navigate_to_eligibility_page(webdriver, driver) {
 
     let eligibilityStatus = false;
 
-    try{
-        // if login was successful then DOM will have an element with side-menu
-        await driver.wait(webdriver.until.elementLocated(webdriver.By.id('side-menu')),WAIT_TIME);
-
-        // navigate to a eligibility page
-        await driver.get(PULSE_ELIGIBILITY_URL);
+    try {
+        // if login was successful then DOM will have an element with class name "inside-content-boxes"
+        await driver.wait(webdriver.until.elementLocated(webdriver.By.className('inside-content-boxes')), WAIT_TIME);
+    
+        //select the emirates ID radio button
+        const radioButton = await driver.findElement(webdriver.By.xpath('//*[@id="mv_form"]/div/div[1]/section/div/div[2]/label/input'));
+        await radioButton.click();
 
         eligibilityStatus = true;
-
-    }catch (e) {
+    
+    } catch (e) {
         if(e instanceof NoSuchElementError){
             logger.error(ELIGIBILITY_PAGE_DOM_CHANGED);
         }/*else{
@@ -99,46 +101,35 @@ async function navigate_to_eligibility_page(webdriver, driver){
     }
     return eligibilityStatus;
 }
-
-async function click_on_eligbility_tab(webdriver, driver){
-
-    let eligibilityTabStatus = false;
-
-    try{
-        // find tab and switch to it
-        activate_tab = driver.findElement(webdriver.By.xpath("//label[@href= '#tab-3']"));
-        await activate_tab.click();
-
-        eligibilityTabStatus = true;
-
-    }catch (e) {
-        if(e instanceof NoSuchElementError){
-            logger.error(ELIGIBILITY_TAB_DOM_CHANGED);
-        }/*else{
-            logger.error(LOGIN_UNKNOWN_ERR);
-        }*/
-    }
-    return eligibilityTabStatus;
-}
-
-async function fill_emirates_id_details(webdriver, driver, emiratesId){
+ 
+async function fill_emirates_id_details(webdriver, driver, emiratesId) {
 
     let emiratesIdStatus = false;
 
-    try{
-        // find text box that will take national ID
-        const emirates_id = await driver.findElement(
-            webdriver.By.id("txtIDTypeValue")
-        );
-        await emirates_id.sendKeys(emiratesId);
+    try {
+        //code to slice the emirates ID and enter in the respective fields
+        const birth_year = emiratesId.substring(4, 8);
+        const random_seven_digit = emiratesId.substring(9, 16);
+        const check_digit = emiratesId.substring(17);
 
-        // run pure javascript to select option from select 
-        // 2 is out-patient
-        driver.executeScript("document.getElementById('ctl00_ContentPlaceHolderBody_cmbType').value = 2");
+        const birth_year_section = await driver.findElement(
+            webdriver.By.id("eid2")
+        );
+        await birth_year_section.sendKeys(birth_year);
+        
+        const random_seven_digit_section = await driver.findElement(
+            webdriver.By.id("eid3")
+        );
+        await random_seven_digit_section.sendKeys(random_seven_digit);
+        
+        const check_digit_section = await driver.findElement(
+            webdriver.By.id("eid4")
+        );
+        await check_digit_section.sendKeys(check_digit);
 
         // submit the form
         const submit_button = await driver.findElement(
-            webdriver.By.id("btnCheckEligibilityorSearchbyPolicy")
+            webdriver.By.id("mv_search")
         );
         await submit_button.click();
 
@@ -157,7 +148,7 @@ async function fill_emirates_id_details(webdriver, driver, emiratesId){
 async function logout(driver){
     try{
         //click on the signout button and exit
-        await driver.executeScript("document.querySelector(\'/*Here goes the element*/').click()");
+        await driver.executeScript("document.querySelector(\"a[href='redirectToLogout.action']\").click()");
 
     } catch (e) {
         if(e instanceof NoSuchElementError){
@@ -167,14 +158,14 @@ async function logout(driver){
         }*/
     }
 }
-
-async function extract_eligibility(webdriver, driver){
-
+    
+async function extract_eligibility(webdriver, driver) {
+ 
     // check if banner that appears when eligibity is there shows up or not
     // if not return false else true
-    await driver.wait(webdriver.until.elementLocated(webdriver.By.id('lblResultMessage1')), WAIT_TIME);
+    await driver.wait(webdriver.until.elementLocated(webdriver.By.className('cardcontent')),WAIT_TIME);
     try {
-        await driver.findElement(webdriver.By.id("lblResultMessage1"));
+        await driver.findElement(webdriver.By.className("cardcontent"));
 
         // store in relative path aka in current directory 
         // create a new folder called screenshots and save it there
@@ -185,9 +176,9 @@ async function extract_eligibility(webdriver, driver){
             fs.writeFileSync(screenshotPath + name, data, 'base64');
         };
         
-        // filename should be pulse_last_run.png
+        // filename should be daman_last_run.png
         driver.takeScreenshot().then(function (data) {
-            writeScreenshot(data, 'pulse_last_run.png');
+            writeScreenshot(data, 'daman_last_run.png');
         });
 
         await logout(driver);
@@ -197,6 +188,7 @@ async function extract_eligibility(webdriver, driver){
     } catch (e) {
         if(e instanceof NoSuchElementError){
             logger.error(EXTRACTING_ELIGIBILITY_ERROR);
+            //await logout(driver);
         }/*else{
             logger.error(LOGIN_UNKNOWN_ERR);
         }*/
@@ -204,44 +196,38 @@ async function extract_eligibility(webdriver, driver){
     await logout(driver);
 }
 
-async function execute(){
-
+async function execute() {
+ 
     // To run in headless mode
     // let driver = new webdriver.Builder().forBrowser("chrome").setChromeOptions(options).build();
     let driver = new webdriver.Builder().forBrowser("chrome").build();
-
+  
     // non headless mode - for seeing visually what's happening with automation
     // let driver = new webdriver.Builder().forBrowser("chrome").build();
 
-    try{
-        
-        const loginStatusResult = await login(webdriver, driver, "insurance_dmmckd", "Aster@2024");
+    try {
+   
+        const loginStatusResult =  await login(webdriver, driver, "ASTERAWEER", "Aster@123");
 
         if(loginStatusResult == false){
             throw "";
         }
-
-        const eligibilityStatusResult = await navigate_to_eligibility_page(webdriver, driver);
+        
+        const eligibilityStatusResult =  await navigate_to_eligibility_page(webdriver, driver);
 
         if(eligibilityStatusResult == false){
             throw "";
         }
-
-        const eligibilityTabResult = await click_on_eligbility_tab(webdriver, driver);
-
-        if(eligibilityTabResult == false){
-            throw "";
-        }
-
-        const emiratesIdStatusResult = await fill_emirates_id_details(webdriver, driver, "784-1994-1609796-4");
+    
+        const emiratesIdStatusResult =  await fill_emirates_id_details(webdriver, driver, "784-1984-1437575-2");
 
         if(emiratesIdStatusResult == false){
             throw "";
         }
 
         return await extract_eligibility(webdriver, driver);
-
-    }catch (e) {
+ 
+    } catch (e) {
         if(e instanceof NoSuchElementError){
             logger.error(EXECUTION_ERROR);
         }/*else{
@@ -250,13 +236,13 @@ async function execute(){
     } finally {
         await driver.quit();
     }
-
+    
 }
-
-
+ 
+    
 // execute the sequential function
 (async () => {
-    var status = await execute();
+    var status = await execute()
     if (status == true) {
         console.log("is eligible");
     }
@@ -264,3 +250,4 @@ async function execute(){
         console.log("isn't eligible")
     }
 })()
+    
