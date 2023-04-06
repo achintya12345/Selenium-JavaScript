@@ -23,6 +23,12 @@ const ECLAIM_ELIGIBILITY_PAGE_URL = "https://www.eclaimlink.ae/misc/SearchMember
 const POP_UP_DOM_CHANGED = ' popup page - DOM has changed';
 const NAVIGATE_TO_ELIGIBILITY_ERROR = ' navigation to eligibility page has error';
 
+const ALBUHAIRA_URL = "https://provider.albuhaira.com/MemberInformationSearch.aspx";
+const MEMBER_DOM_CHANGED = 'member page - DOM has changed';
+
+const ADNIC_URL = "https://online.adnic.ae/eportal/login.html";
+const ADNIC_ELIGIBILITY_URL = "https://online.adnic.ae/eportal/providers.html";
+
 module.exports = {DAMAN_URL, 
     LOGIN_DOM_CHANGED,
     ELIGIBILITY_PAGE_DOM_CHANGED,
@@ -42,5 +48,9 @@ module.exports = {DAMAN_URL,
     ECLAIM_ELIGIBILITY_PAGE_URL,
     POP_UP_DOM_CHANGED,
     NAVIGATE_TO_ELIGIBILITY_ERROR,
-    LOG_OUT_ERROR
+    LOG_OUT_ERROR,
+    ALBUHAIRA_URL,
+    MEMBER_DOM_CHANGED, 
+    ADNIC_URL,
+    ADNIC_ELIGIBILITY_URL
 };
