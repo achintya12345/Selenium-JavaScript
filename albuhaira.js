@@ -37,12 +37,10 @@ const logger = winston.createLogger({
 });
 
 async function login(webdriver, driver, username, password) {
-    console.log("In login page");
+ 
     let loginStatus = false;
-    console.log(username);
-    console.log(password);
+    
     try{
-        console.log("Inside the login try");
         // go to webpage
         await driver.get(ALBUHAIRA_URL);
 
@@ -50,7 +48,7 @@ async function login(webdriver, driver, username, password) {
         const loginInButton = await driver.findElement(webdriver.By.xpath('/html/body/header/nav/div/div[2]/ul/li[3]/a'));
         await loginInButton.click();
 
-        
+        /*
         const usernameField = await driver.findElement(
             webdriver.By.xpath("//*[@id='user-name']")  
         );
@@ -58,10 +56,18 @@ async function login(webdriver, driver, username, password) {
         const passwordField = await driver.findElement(
             webdriver.By.xpath("//*[@id='user-pass']")
         );
-        console.log("before sending the keys");
+        */
+
+        await driver.executeScript("document.querySelector(\"input[id='user-name']\").value = '830892455'");
+        await driver.executeScript("document.querySelector(\"input[id='user-pass']\").value = 'TIfFbBQSzdaajIQRHwJo'");
+
+        
+        /*
         await usernameField.sendKeys(username);
         await passwordField.sendKeys(password);
-        console.log("after sending the keys");
+        */
+        
+
         // find the login button and click it.
         await driver.executeScript("document.getElementById('login_btn').click();");
 
@@ -128,13 +134,13 @@ async function fill_emirates_id_details(webdriver, driver, emiratesId){
 } 
 
 async function logout(driver){
-    console.log("inside logout function");
+    
     try{
-        console.log("Before finding the logout button");
+
         await driver.wait(webdriver.until.elementLocated(webdriver.By.css("a[href='Default.aspx']")), WAIT_TIME);
         //click on the logout button and exit
         await driver.executeScript("document.querySelector(\"a[href='Default.aspx']\").click()");
-        console.log("After clicking the logout button");
+    
     } catch (e) {
         if(e instanceof NoSuchElementError){
             logger.error(LOG_OUT_ERROR);
@@ -147,7 +153,7 @@ async function logout(driver){
 async function extract_eligibility(webdriver, driver){
 
     try{
-        console.log("Before the sleep");
+
         //wait for the result to load
         driver.sleep(1*5000);
 

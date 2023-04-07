@@ -27,7 +27,18 @@ const ALBUHAIRA_URL = "https://provider.albuhaira.com/MemberInformationSearch.as
 const MEMBER_DOM_CHANGED = 'member page - DOM has changed';
 
 const ADNIC_URL = "https://online.adnic.ae/eportal/login.html";
-const ADNIC_ELIGIBILITY_URL = "https://online.adnic.ae/eportal/providers.html";
+
+const INAYAH_URL = "https://www.inayahtpa.com/App/InayahHome.aspx";
+
+const SAICO_URL = "https://providers.damana.com/";
+
+const ECARE_URL = "https://portal.ecaretpa.com/JBM_HIMS/HimsPortal/Forms/Login.aspx";
+
+const MEDNET_URL = "https://connect-mednet.com/login";
+
+const NAS_URL = "https://jet.nnhs.ae/JET/Login.aspx";
+
+const AXA_URL = "https://partners.gig-gulf.com/ProviderLogin/login.aspx";
 
 module.exports = {DAMAN_URL, 
     LOGIN_DOM_CHANGED,
@@ -52,5 +63,10 @@ module.exports = {DAMAN_URL,
     ALBUHAIRA_URL,
     MEMBER_DOM_CHANGED, 
     ADNIC_URL,
-    ADNIC_ELIGIBILITY_URL
+    INAYAH_URL,
+    SAICO_URL,
+    ECARE_URL,
+    MEDNET_URL,
+    NAS_URL,
+    AXA_URL
 };

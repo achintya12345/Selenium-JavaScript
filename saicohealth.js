@@ -1,4 +1,4 @@
-const { DAMAN_URL, WAIT_TIME, LOGIN_DOM_CHANGED, ELIGIBILITY_PAGE_DOM_CHANGED, EMIRATES_ID_SECTION_ERROR, EXTRACTING_ELIGIBILITY_ERROR, EXECUTION_ERROR, LOGIN_UNKNOWN_ERR, LOG_OUT_ERROR} = require('./constants.js');
+const { SAICO_URL, WAIT_TIME, LOGIN_DOM_CHANGED, ELIGIBILITY_PAGE_DOM_CHANGED, EMIRATES_ID_SECTION_ERROR, EXTRACTING_ELIGIBILITY_ERROR, EXECUTION_ERROR, LOGIN_UNKNOWN_ERR, LOG_OUT_ERROR} = require('./constants.js');
 const winston = require('winston');
 const { format } = require('logform');
     
@@ -25,7 +25,6 @@ const logger = winston.createLogger({
 });
 */   
 
-
 const logger = winston.createLogger({
     format: format.combine(
       format.timestamp(),
@@ -38,23 +37,23 @@ const logger = winston.createLogger({
 
 
 async function login(webdriver, driver, username, password) {
-    
-    let loginStatus = false;
-    
-    try {
-        // go to webpage
-        await driver.get(DAMAN_URL);
 
-        //click on the sign-in button
-        const signInButton = await driver.findElement(webdriver.By.xpath('//*[@id="navbar"]/div/div/div/ul[2]/li[1]/a'));
-        await signInButton.click();
-    
+    let loginStatus = false;
+
+    try{
+        // go to webpage
+        await driver.get(SAICO_URL);
+
+        //click on the login-in button
+        const loginButton = await driver.findElement(webdriver.By.xpath('//*[@id="my-body"]/hiip-root/div/hiip-landing-page/div/div[1]/div[1]/div[2]/div/button'));
+        await loginButton.click();
+
         // find username and password elements
         const usernameField = await driver.findElement(
-            webdriver.By.id("j_username")
+            webdriver.By.id("Username")
         );
         const passwordField = await driver.findElement(
-            webdriver.By.id("j_password")
+            webdriver.By.id("Password")
         );
 
         // set the password and username
@@ -62,12 +61,11 @@ async function login(webdriver, driver, username, password) {
         await passwordField.sendKeys(password);
 
         // find the login button and click it.
-        const loginButton = await driver.findElement(webdriver.By.xpath('//*[@id="form-sign-in"]/div/div/div[5]/div/button'));
-        await loginButton.click();
-        
-        loginStatus = true;
+        const loginMainButton = await driver.findElement(webdriver.By.xpath('//*[@id="providers-page"]/div[2]/div/div/div/div/form/fieldset/div[3]/button'));
+        await loginMainButton.click();
 
-    } catch (e) {
+        loginStatus = true;
+    }catch (e) {
         if(e instanceof NoSuchElementError){
             logger.error(LOGIN_DOM_CHANGED);
         
@@ -82,17 +80,15 @@ async function navigate_to_eligibility_page(webdriver, driver) {
 
     let eligibilityStatus = false;
 
-    try {
-        // if login was successful then DOM will have an element with class name "inside-content-boxes"
-        await driver.wait(webdriver.until.elementLocated(webdriver.By.className('inside-content-boxes')), WAIT_TIME);
-    
-        //select the emirates ID radio button
-        const radioButton = await driver.findElement(webdriver.By.xpath('//*[@id="mv_form"]/div/div[1]/section/div/div[2]/label/input'));
-        await radioButton.click();
+    try{
+        await driver.sleep(3*1000);
+
+        //select the member eligibility option
+        const eligibilityButton = await driver.findElement(webdriver.By.xpath('//*[@id="my-body"]/hiip-root/div/hiip-home/mat-sidenav-container/mat-sidenav-content/hiip-home-content/hiip-dashboard/div/div/div/div/div[4]/div/a'));
+        await eligibilityButton.click();
 
         eligibilityStatus = true;
-    
-    } catch (e) {
+    }catch (e) {
         if(e instanceof NoSuchElementError){
             logger.error(ELIGIBILITY_PAGE_DOM_CHANGED);
         }/*else{
@@ -101,40 +97,27 @@ async function navigate_to_eligibility_page(webdriver, driver) {
     }
     return eligibilityStatus;
 }
- 
+
 async function fill_emirates_id_details(webdriver, driver, emiratesId) {
 
     let emiratesIdStatus = false;
 
-    try {
-        //code to slice the emirates ID and enter in the respective fields
-        const birth_year = emiratesId.substring(4, 8);
-        const random_seven_digit = emiratesId.substring(9, 16);
-        const check_digit = emiratesId.substring(17);
-
-        const birth_year_section = await driver.findElement(
-            webdriver.By.id("eid2")
-        );
-        await birth_year_section.sendKeys(birth_year);
+    try{
+        await driver.sleep(3*1000);
         
-        const random_seven_digit_section = await driver.findElement(
-            webdriver.By.id("eid3")
+        //find the emirates ID field
+        const emiratesIdField = await driver.findElement(
+            webdriver.By.id("mat-input-0")
         );
-        await random_seven_digit_section.sendKeys(random_seven_digit);
         
-        const check_digit_section = await driver.findElement(
-            webdriver.By.id("eid4")
-        );
-        await check_digit_section.sendKeys(check_digit);
+        //send the emirates ID
+        await emiratesIdField.sendKeys(emiratesId);
 
-        // submit the form
-        const submit_button = await driver.findElement(
-            webdriver.By.id("mv_search")
-        );
-        await submit_button.click();
+        //click on the check eligibility button
+        const checkEligibilityButton = await driver.findElement(webdriver.By.xpath('//*[@id="my-body"]/hiip-root/div/hiip-home/mat-sidenav-container/mat-sidenav-content/hiip-home-content/hiip-eligibility/div/div/div/div[2]/button'));
+        await checkEligibilityButton.click();
 
         emiratesIdStatus = true;
-
     }catch (e) {
         if(e instanceof NoSuchElementError){
             logger.error(EMIRATES_ID_SECTION_ERROR);
@@ -145,10 +128,15 @@ async function fill_emirates_id_details(webdriver, driver, emiratesId) {
     return emiratesIdStatus;
 }
 
-async function logout(driver){
+async function logout(webdriver,driver){
     try{
-        //click on the signout button and exit
-        await driver.executeScript("document.querySelector(\"a[href='redirectToLogout.action']\").click()");
+        //click on the dropdown button 
+        const dropDownButton = await driver.findElement(webdriver.By.xpath('//*[@id="my-body"]/hiip-root/div/hiip-home/hiip-header/nav/div[2]/div[3]/hiip-user-management/div/div/div/button'));
+        await dropDownButton.click();
+
+        //click on logout option
+        const logOutButton = await driver.findElement(webdriver.By.xpath('//*[@id="cdk-overlay-0"]/div/div/p[3]/a'));
+        await logOutButton.click();
 
     } catch (e) {
         if(e instanceof NoSuchElementError){
@@ -158,43 +146,8 @@ async function logout(driver){
         }*/
     }
 }
-    
-async function extract_eligibility(webdriver, driver) {
- 
-    // check if banner that appears when eligibity is there shows up or not
-    // if not return false else true
-    await driver.wait(webdriver.until.elementLocated(webdriver.By.className('cardcontent')),WAIT_TIME);
-    try {
-        await driver.findElement(webdriver.By.className("cardcontent"));
 
-        // store in relative path aka in current directory 
-        // create a new folder called screenshots and save it there
-        // you will not find selenium_local_map on user's computer
-        function writeScreenshot(data, name) {
-            name = name || 'ss.png';
-            var screenshotPath = 'C:\\selenium_local_map\\';
-            fs.writeFileSync(screenshotPath + name, data, 'base64');
-        };
-        
-        // filename should be daman_last_run.png
-        driver.takeScreenshot().then(function (data) {
-            writeScreenshot(data, 'daman_last_run.png');
-        });
-
-        await logout(driver);
-
-        return true;
-
-    } catch (e) {
-        if(e instanceof NoSuchElementError){
-            logger.error(EXTRACTING_ELIGIBILITY_ERROR);
-            //await logout(driver);
-        }/*else{
-            logger.error(LOGIN_UNKNOWN_ERR);
-        }*/
-    }
-    await logout(driver);
-}
+//async function extract_eligibility(webdriver, driver)
 
 async function execute() {
  
@@ -207,7 +160,7 @@ async function execute() {
 
     try {
    
-        const loginStatusResult =  await login(webdriver, driver, "ASTERAWEER", "Aster@123");
+        const loginStatusResult =  await login(webdriver, driver, "ALWARQA", "Aster@123");
 
         if(loginStatusResult == false){
             throw "";
@@ -225,7 +178,8 @@ async function execute() {
             throw "";
         }
 
-        return await extract_eligibility(webdriver, driver);
+        await logout(webdriver, driver);
+        //return await extract_eligibility(webdriver, driver);
  
     } catch (e) {
         if(e instanceof NoSuchElementError){
