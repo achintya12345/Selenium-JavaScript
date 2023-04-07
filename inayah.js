@@ -158,7 +158,7 @@ async function execute() {
 
     try {
    
-        const loginStatusResult =  await login(webdriver, driver, "insurance.intcity@asterclinics.com", "WELCOME2020");
+        const loginStatusResult =  await login(webdriver, driver, );
 
         if(loginStatusResult == false){
             throw "";
@@ -170,7 +170,7 @@ async function execute() {
             throw "";
         }
     
-        const emiratesIdStatusResult =  await fill_emirates_id_details(webdriver, driver, "784-1984-1437575-2", "563827382");
+        const emiratesIdStatusResult =  await fill_emirates_id_details(webdriver, driver, );
 
         if(emiratesIdStatusResult == false){
             throw "";
