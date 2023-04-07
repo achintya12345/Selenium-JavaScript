@@ -175,13 +175,13 @@ async function execute() {
 
     try {
    
-        const loginStatusResult =  await login(webdriver, driver, "ALRAFA", "Jubilee@2022");
+        const loginStatusResult =  await login(webdriver, driver, );
 
         if(loginStatusResult == false){
             throw "";
         }
     
-        const emiratesIdStatusResult =  await fill_emirates_id_details(webdriver, driver, "784-1995-3659537-6");
+        const emiratesIdStatusResult =  await fill_emirates_id_details(webdriver, driver, );
 
         if(emiratesIdStatusResult == false){
             throw "";
