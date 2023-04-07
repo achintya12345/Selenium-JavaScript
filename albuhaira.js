@@ -208,7 +208,7 @@ async function execute() {
     try{
         await driver.sleep(3*1000);
         
-        const loginStatusResult =  await login(webdriver, driver, "830892455", "TIfFbBQSzdaajIQRHwJo");
+        const loginStatusResult =  await login(webdriver, driver,);
 
         if(loginStatusResult == false){
             throw "";
@@ -220,7 +220,7 @@ async function execute() {
             throw "";
         }
 
-        const emiratesIdStatusResult =  await fill_emirates_id_details(webdriver, driver, "784-1984-5354391-4");
+        const emiratesIdStatusResult =  await fill_emirates_id_details(webdriver, driver, /*emiratesId*/);
 
         if(emiratesIdStatusResult == false){
             throw "";
