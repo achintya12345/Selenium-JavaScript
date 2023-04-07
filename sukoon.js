@@ -232,13 +232,13 @@ async function execute() {
 
     try{
 
-        const loginStatusResult =  await login(webdriver, driver, "DHA-F-7867194", "dubailandaster", "Aster@123");
+        const loginStatusResult =  await login(webdriver, driver, );
 
         if(loginStatusResult == false){
             throw "";
         }
 
-        const emiratesIdStatusResult =  await fill_emirates_id_details(webdriver, driver, "784-1999-1217815-1");
+        const emiratesIdStatusResult =  await fill_emirates_id_details(webdriver, driver, );
 
         if(emiratesIdStatusResult == false){
             throw "";
