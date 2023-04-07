@@ -205,7 +205,7 @@ async function execute() {
 
     try{
 
-        const loginStatusResult =  await login(webdriver, driver, "aster.alnahda", "Aster@123");
+        const loginStatusResult =  await login(webdriver, driver,/*username*/, /*password*/);
 
         if(loginStatusResult == false){
             throw "";
@@ -217,7 +217,7 @@ async function execute() {
             throw "";
         }
 
-        const emiratesIdStatusResult =  await fill_emirates_id_details(webdriver, driver, "784-1968-0254096-1", "050 123 4569");
+        const emiratesIdStatusResult =  await fill_emirates_id_details(webdriver, driver, /*emiratesId*/, /*password*/);
 
         if(emiratesIdStatusResult == false){
             throw "";
