@@ -210,7 +210,7 @@ async function execute() {
 
     try {
 
-        const loginStatusResult = await login(webdriver, driver, "INSURANCE.JEBELALI@ASTERMEDICALCENTRE.COM", "Aster@1234");
+        const loginStatusResult = await login(webdriver, driver, /*username*/, /*password*/);
 
         if (loginStatusResult == false) {
             throw "";
@@ -222,7 +222,7 @@ async function execute() {
             throw "";
         }
 
-        const emiratesIdStatusResult = await fill_emirates_id_details(webdriver, driver, "784-1985-5951693-9");
+        const emiratesIdStatusResult = await fill_emirates_id_details(webdriver, driver, /*emiratesID*/);
 
         if (emiratesIdStatusResult == false) {
             throw "";
