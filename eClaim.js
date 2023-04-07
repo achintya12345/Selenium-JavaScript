@@ -236,7 +236,7 @@ async function execute(){
 
     try{
         
-        const loginStatusResult = await login(webdriver, driver, "ASTER SHAAB", "asterdmh");
+        const loginStatusResult = await login(webdriver, driver, );
 
         if(loginStatusResult == false){
             throw "";
@@ -254,7 +254,7 @@ async function execute(){
             throw "";
         }
 
-        const emiratesIdStatusResult = await fill_emirates_id_details(webdriver, driver, "784-1974-4218064-8");
+        const emiratesIdStatusResult = await fill_emirates_id_details(webdriver, driver, );
 
         if(emiratesIdStatusResult == false){
             throw "";
