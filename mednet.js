@@ -180,13 +180,13 @@ async function execute() {
     // let driver = new webdriver.Builder().forBrowser("chrome").build();
 
     try{
-        const loginStatusResult =  await login(webdriver, driver, "ASTERDIGITAL_ALRAFA INTERCITY", "eXuoIL");
+        const loginStatusResult =  await login(webdriver, driver, );
 
         if(loginStatusResult == false){
             throw "";
         }
     
-        const emiratesIdStatusResult =  await fill_emirates_id_details(webdriver, driver, "784-1991-4306139-0", "0523181429");
+        const emiratesIdStatusResult =  await fill_emirates_id_details(webdriver, driver, );
 
         if(emiratesIdStatusResult == false){
             throw "";
