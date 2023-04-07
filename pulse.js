@@ -217,7 +217,7 @@ async function execute(){
 
     try{
         
-        const loginStatusResult = await login(webdriver, driver, "insurance_dmmckd", "March@2023");
+        const loginStatusResult = await login(webdriver, driver, );
 
         if(loginStatusResult == false){
             throw "";
@@ -235,7 +235,7 @@ async function execute(){
             throw "";
         }
 
-        const emiratesIdStatusResult = await fill_emirates_id_details(webdriver, driver, "784-1994-1609796-4");
+        const emiratesIdStatusResult = await fill_emirates_id_details(webdriver, driver, );
 
         if(emiratesIdStatusResult == false){
             throw "";
